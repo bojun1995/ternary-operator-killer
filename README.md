@@ -1,71 +1,120 @@
-# ternary-operator-killer README
+<p align="center">
+  <a href="https://github.com/bojun1995/o-file-path" target="_blank">
+    <img width="180" src="logo.png" alt="logo">
+  </a>
+</p>
 
-This is the README for your extension "ternary-operator-killer". After writing up a brief description, we recommend including the following sections.
+> VS Code插件，快捷复制别名路径、导入别名路径、相对路径、导入相对路径
 
-## Features
+![GitHub last commit](https://img.shields.io/github/last-commit/bojun1995/o-file-path?style=for-the-badge)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/bojun1995/o-file-path?style=for-the-badge)
+![GitHub Release Date](https://img.shields.io/github/release-date/bojun1995/o-file-path?style=for-the-badge)
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+# o-file-path
 
-For example if there is an image subfolder under your extension project workspace:
+[中文](https://github.com/bojun1995/o-file-path/blob/main/README-CN.md)
 
-\!\[feature X\]\(images/feature-x.png\)
+## 使用方式
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+#### 下载
 
-## Requirements
+[VS Code插件商店](https://marketplace.visualstudio.com/items?itemName=bojun1995.o-file-path&ssr=false#overview)
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+#### 如何使用
 
-## Extension Settings
+```
+- 侧边栏文件菜单 右键
+- 文件顶部菜单 右键
+- F1呼出命令执行面板 输入命令
+```
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+*注意：相对路径、导入相对路径
 
-For example:
+```
+例如：
+├── src
+│   ├── index.js
+│   ├── util
+│   │   ├── test.js
 
-This extension contributes the following settings:
+1.打开index.js
+2.侧边栏文件菜单右键选择test.js，选择「复制导入相对路径」
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+得到：
+import Test from './util/test.js'
+```
 
-## Known Issues
+#### 功能入口兼容
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+|                  | 侧边栏文件菜单 | 文件顶部菜单 | 直接运行命令 | 文件中选中单词后右键菜单 |
+| ---------------- | -------------- | ------------ | ------------ | ------------------------ |
+| 别名路径         | ✅             | ✅           | ✅           | ❌                       |
+| 导入别名路径     | ✅             | ✅           | ✅           | ❌                       |
+| 相对路径         | ✅             | ❌           | ❌           | ❌                       |
+| 导入相对路径     | ✅             | ❌           | ❌           | ❌                       |
+| 导入局部别名路径 | ❌             | ❌           | ❌           | ✅                       |
 
-## Release Notes
+#### 配置说明
 
-Users appreciate release notes as you update your extension.
+##### 别名配置 o-file-path.alias
 
-### 1.0.0
+```
+*配置应为数组形式
+*为防止同路径别名冲突，排在前面的配置会优先读取
 
-Initial release of ...
+[
+  {
+    "alias": "#",
+    "path": "src/assets"
+  },
+  {
+    "alias": "@",
+    "path": "src"
+  }
+]
+```
 
-### 1.0.1
+##### 别名配置 o-file-path.splitFileName
 
-Fixed issue #.
+```
+*配置应为数组形式
 
-### 1.1.0
+['ts']
+```
 
-Added features X, Y, and Z.
+## 开发方式
 
----
+#### 安装依赖
 
-## Following extension guidelines
+```
+#yarn
+yarn
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+#npm
+npm i
+```
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+#### 本地开发
 
-## Working with Markdown
+```
+1. 使用VS Code打开源码
+2. F5 运行插件
+```
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+#### 本地打包插件
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+参考：[vsce —— 发布工具参阅](https://liiked.github.io/VS-Code-Extension-Doc-ZH/#/working-with-extensions/publish-extension)
 
-## For more information
+```
+1. 安装vsce
+2. vsce package
+```
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+## 技术栈
 
-**Enjoy!**
+- Typescript
+- ESLint + Prettier + Husky
+
+## 致谢
+
+- 开发教程[VS-Code-Extension-Doc-ZH](https://github.com/Liiked/VS-Code-Extension-Doc-ZH)

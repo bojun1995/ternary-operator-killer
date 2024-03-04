@@ -14,10 +14,19 @@
   "contributes": {
     "commands": [
       {
-        "command": "ternary-operator-killer.helloWorld",
-        "title": "Hello World"
+        "command": "ternary-operator-killer.doParseByClipboard",
+        "title": "[💀?:]三元运算符杀手 转换三元运算符"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "ternary-operator-killer.doParseByClipboard",
+          "group": "ternary-operator-killer@1",
+          "when": "editorHasSelection"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

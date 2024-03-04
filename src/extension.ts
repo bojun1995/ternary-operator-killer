@@ -1,26 +1,68 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "ternary-operator-killer" is now active!');
+	const doParseByClipboard = vscode.commands.registerCommand('ternary-operator-killer.doParseByClipboard', (uri: vscode.Uri | undefined) => {
+		const editor = vscode.window.activeTextEditor;
+		const doc = editor?.document;
+		const selection = editor?.selection;
+		const selectedWords = doc?.getText(selection) || [''];
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('ternary-operator-killer.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from ternary-operator-killer!');
+		if ((selectedWords ?? '') === '') {
+			vscode.window.showErrorMessage('请选择三元运算符再执行');
+			return;
+		}
+
+		if (selectedWords.includes('?') === false || selectedWords.includes(':') === false) {
+			vscode.window.showErrorMessage('请选择三元运算符再执行');
+			return;
+		}
+
+		if (selectedWords.length > 0) {
+			const wordsList: string[] = Array.from(selectedWords);
+			let wordCache = '';
+			// 按照条件分词
+			const ternaryOpList: string[] = [];
+			const questionIndexList: number[] = [];
+
+			wordsList.forEach((word, wordIdx) => {
+				let isText = true;
+
+				// 过滤 `` '' "" 中夹带?:的情况
+				let isStringMod = false;
+				let stringMod = 'none';
+				if (['\`', '\'', '\"'].includes(word)) {
+					isStringMod = true;
+					if (stringMod === 'none') {
+						// 打开字符串模式
+						stringMod = word;
+					} else {
+						// 关闭
+						stringMod = 'none';
+					}
+				}
+
+				if (['?', ':'].includes(word)) {
+					isText = false;
+					ternaryOpList.push(wordCache);
+					ternaryOpList.push(word);
+					if (word === '?') {
+						questionIndexList.push(wordIdx);
+					}
+					wordCache = '';
+				}
+				if (isText) {
+					wordCache += word;
+				}
+			});
+			debugger;
+		}
+		vscode.window.showInformationMessage('');
 	});
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(doParseByClipboard);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	vscode.window.showInformationMessage('exit');
+}
