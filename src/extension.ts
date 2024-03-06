@@ -23,36 +23,54 @@ export function activate(context: vscode.ExtensionContext) {
 			let wordCache = '';
 			// 按照条件分词
 			const ternaryOpList: string[] = [];
-			const questionIndexList: number[] = [];
+			const ternaryOpTypeList: string[] = [];
+			// 过滤 `` '' "" 中夹带?:的情况
+			let isStrMod = false;
+			let strModOpenWord = 'none';
 
 			wordsList.forEach((word, wordIdx) => {
-				let isText = true;
 
-				// 过滤 `` '' "" 中夹带?:的情况
-				let isStringMod = false;
-				let stringMod = 'none';
+				// 检测 并打开stringMod
 				if (['\`', '\'', '\"'].includes(word)) {
-					isStringMod = true;
-					if (stringMod === 'none') {
-						// 打开字符串模式
-						stringMod = word;
-					} else {
-						// 关闭
-						stringMod = 'none';
+					if (isStrMod === false) {
+						isStrMod = true;
+						strModOpenWord = word;
+					} else if (strModOpenWord === word) {
+						// 检测 并关闭stringMod
+						isStrMod = false;
+						strModOpenWord = 'none';
 					}
 				}
 
-				if (['?', ':'].includes(word)) {
-					isText = false;
-					ternaryOpList.push(wordCache);
-					ternaryOpList.push(word);
-					if (word === '?') {
-						questionIndexList.push(wordIdx);
-					}
-					wordCache = '';
-				}
-				if (isText) {
+				// stringMod直接缓存待push
+				if (isStrMod) {
 					wordCache += word;
+				} else {
+
+					if (['?', ':'].includes(word)) {
+						// push之前缓存的text并清空
+						ternaryOpList.push(wordCache);
+						ternaryOpTypeList.push('text');
+						wordCache = '';
+
+						// push当前操作符
+						ternaryOpList.push(word);
+						if ('?' === word) {
+							ternaryOpTypeList.push('question');
+						} else if (':' === word) {
+							ternaryOpTypeList.push('colon');
+						}
+					} else {
+						// 继续缓存cache
+						wordCache += word;
+					}
+				}
+
+				// 最后一定为text直接push
+				if (wordIdx === wordsList.length - 1) {
+					ternaryOpList.push(wordCache);
+					ternaryOpTypeList.push('text');
+					wordCache = '';
 				}
 			});
 			debugger;

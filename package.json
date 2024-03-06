@@ -15,7 +15,7 @@
     "commands": [
       {
         "command": "ternary-operator-killer.doParseByClipboard",
-        "title": "[💀?:]三元运算符杀手 转换三元运算符"
+        "title": "💀 三元运算符杀手"
       }
     ],
     "menus": {
