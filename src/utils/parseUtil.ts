@@ -15,17 +15,16 @@ export function doParseSelectedWords2OperatorList(selectedWords: string): OPERAT
 
   let wordsList: string[] = [];
   let wordCache = '';
-  // 按照条件分词
-  const ternaryOpList: string[] = [];
-  const ternaryOpTypeList: string[] = [];
+
   // 过滤 `` '' "" 中夹带?:的情况
   let isStrMod = false;
   let strModOpenWord = 'none';
 
   if (selectedWords.length > 0) {
     wordsList = Array.from(selectedWords);
-    
+
     wordsList.forEach((word, wordIdx) => {
+
       // 检测 并打开stringMod
       if (['\`', '\'', '\"'].includes(word)) {
         if (isStrMod === false) {
@@ -42,20 +41,18 @@ export function doParseSelectedWords2OperatorList(selectedWords: string): OPERAT
       if (isStrMod) {
         wordCache += word;
       } else {
-
         if (['?', ':'].includes(word)) {
-          // push之前缓存的text并清空
-          ternaryOpList.push(wordCache);
-          ternaryOpTypeList.push('text');
+          // push上一次缓存
+          ret.push({
+            type: 'text',
+            value: wordCache
+          });
           wordCache = '';
-
           // push当前操作符
-          ternaryOpList.push(word);
-          if ('?' === word) {
-            ternaryOpTypeList.push('question');
-          } else if (':' === word) {
-            ternaryOpTypeList.push('colon');
-          }
+          ret.push({
+            type: word === '?' ? 'question' : 'colon',
+            value: word,
+          });
         } else {
           // 继续缓存cache
           wordCache += word;
@@ -64,8 +61,10 @@ export function doParseSelectedWords2OperatorList(selectedWords: string): OPERAT
 
       // 最后一定为text直接push
       if (wordIdx === wordsList.length - 1) {
-        ternaryOpList.push(wordCache);
-        ternaryOpTypeList.push('text');
+        ret.push({
+          type: 'text',
+          value: wordCache,
+        });
         wordCache = '';
       }
     });
