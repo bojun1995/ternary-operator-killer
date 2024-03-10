@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { doParseSelectedWords2OperatorList} from './utils/parseUtil';
+import { doParseSelectedWords2OperatorList, doParseOperatorList2Tree } from './utils/parseUtil';
 export function activate(context: vscode.ExtensionContext) {
 
 	const doParseByClipboard = vscode.commands.registerCommand('ternary-operator-killer.doParseByClipboard', (uri: vscode.Uri | undefined) => {
@@ -19,7 +19,9 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		const operatorList = doParseSelectedWords2OperatorList(selectedWords);
-		
+		if (operatorList.length > 0) {
+			const operatorTree = doParseOperatorList2Tree(operatorList);
+		}
 		debugger;
 
 		vscode.window.showInformationMessage('');
