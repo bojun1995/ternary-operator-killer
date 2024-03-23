@@ -21,8 +21,10 @@ export function activate(context: vscode.ExtensionContext) {
 		const operatorList = doParseSelectedWords2OperatorList(selectedWords);
 		if (operatorList.length > 0) {
 			const operatorTree = doParseOperatorList2Tree(operatorList);
+			if (operatorTree.length > 0) {
+				debugger;
+			}
 		}
-		debugger;
 
 		vscode.window.showInformationMessage('');
 	});

@@ -3,7 +3,6 @@ import * as vscode from 'vscode';
 
 /**
  * @description : 解析拷贝的三元运算符
- * @result : 
  *  [
  *    { value: '1', type: 'leaf' },
  *    { value: '?', type: 'question' },
@@ -74,7 +73,12 @@ export function doParseSelectedWords2OperatorList(selectedWords: string): OPERAT
   return ret;
 }
 
-function doCheck(opList: OPERATOR_ITEM[], index: number) {
+/**
+ * @description : 按照三元运算符的固定结构校验
+ * @param {OPERATOR_ITEM} opList
+ * @param {number} index
+ */
+function doCheck(opList: OPERATOR_ITEM[], index: number): boolean {
   const check0 = ['leaf', 'leafList'].includes(opList[index].type);
   const check1 = ['question'].includes(opList[index + 1].type);
   const check2 = ['leaf', 'leafList'].includes(opList[index + 2].type);
@@ -83,7 +87,11 @@ function doCheck(opList: OPERATOR_ITEM[], index: number) {
   return check0 && check1 && check2 && check3 && check4;
 }
 
-export function doParseOperatorList2Tree(opList: OPERATOR_ITEM[]) {
+/**
+ * @description : 合并成一个树形结构
+ * @param {OPERATOR_ITEM} opList
+ */
+export function doParseOperatorList2Tree(opList: OPERATOR_ITEM[]): OPERATOR_ITEM[] {
   let ret: OPERATOR_ITEM[] = [];
   let copyList: OPERATOR_ITEM[] = JSON.parse(JSON.stringify(opList));
   let isContinue = true;
@@ -117,7 +125,8 @@ export function doParseOperatorList2Tree(opList: OPERATOR_ITEM[]) {
     lastLength = copyList.length;
   }
   if (copyList.length > 1) {
-    vscode.window.showErrorMessage('请选择三元运算符再执行');
+    vscode.window.showErrorMessage('请选择完整的三元运算符再执行');
+    return ret;
   }
 
   if (copyList.length === 1) {
