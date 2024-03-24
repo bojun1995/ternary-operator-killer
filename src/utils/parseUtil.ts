@@ -135,3 +135,71 @@ export function doParseOperatorList2Tree(opList: OPERATOR_ITEM[]): OPERATOR_ITEM
 
   return ret;
 }
+
+function getSpace(num: number): string {
+  let ret = '';
+  for (let index = 0; index < num * 2; index++) {
+    ret += ' ';
+
+  }
+  return ret;
+}
+
+export function doParseTree2StrList(opTree: OPERATOR_ITEM[], level: number): string[] {
+  let ret: string[] = [];
+  let ifConditionList: string[] = [];
+  let ifList: string[] = [];
+  let elseStrList: string[] = [];
+  let opList: OPERATOR_ITEM[] = [];
+  let curLevel = level + 1;
+
+  if (opTree.length === 1) {
+    opList = opTree[0].value as OPERATOR_ITEM[];
+  } else {
+    opList = opTree;
+  }
+  if (opList.length === 5) {
+    // if ()
+    if (opList[0].type === 'leaf') {
+      ifConditionList.push(`${opList[0].value.toString().trim()}`);
+    } else if (opList[0].type === 'leafList') {
+      ifConditionList.push(...doParseTree2StrList(opList[0].value as OPERATOR_ITEM[], curLevel));
+    }
+    // if {}
+    if (opList[2].type === 'leaf') {
+      ifList.push(
+        `${getSpace(curLevel)}{`,
+        `${getSpace(curLevel)}  return ${opList[2].value.toString().trim()}`,
+        `${getSpace(curLevel)}}`
+      );
+    } else if (opList[2].type === 'leafList') {
+      ifList.push(
+        `${getSpace(curLevel)}{`,
+        ...doParseTree2StrList(opList[2].value as OPERATOR_ITEM[], curLevel),
+        `${getSpace(curLevel)}}`
+      );
+    }
+    // else
+    if (opList[4].type === 'leaf') {
+      elseStrList.push(
+        `${getSpace(curLevel)}else`,
+        `${getSpace(curLevel)}{`,
+        `${getSpace(curLevel)}  return ${opList[4].value.toString().trim()}`,
+        `${getSpace(curLevel)}}`
+      );
+    } else if (opList[4].type === 'leafList') {
+      elseStrList.push(...doParseTree2StrList(opList[4].value as OPERATOR_ITEM[], curLevel));
+    }
+  }
+
+  let retIfConditionList: string[] = [];
+  if (ifConditionList.length === 1) {
+    retIfConditionList = [
+      `${getSpace(curLevel)}if (${ifConditionList[0]}) `
+    ];
+  } else {
+    retIfConditionList = ifConditionList;
+  }
+  ret = [...retIfConditionList, ...ifList, ...elseStrList];
+  return ret;
+}
