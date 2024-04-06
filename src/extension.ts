@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { doParseSelectedWords2OperatorList, doParseOperatorList2Tree, doParseTree2StrList } from './utils/parseUtil';
+import { doParseSelectedWords2OperatorList, doParseOperatorList2Tree, doParseTree2StrList, doParseTree2StrList2 } from './utils/parseUtil';
 import { writeText2Clipboard } from './utils/clipboardUtil';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -24,7 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
 		if (operatorList.length > 0) {
 			const operatorTree = doParseOperatorList2Tree(operatorList);
 			if (operatorTree.length === 1) {
-				const retStrList = doParseTree2StrList(operatorTree, -1);
+				const retStrList = doParseTree2StrList2(operatorTree, -1);
+				const testTree = operatorTree;
+				debugger;
 				if (retStrList.length > 0) {
 					const retStr = retStrList.map(str => {
 						return `${str} \n`;

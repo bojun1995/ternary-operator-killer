@@ -168,22 +168,22 @@ export function doParseTree2StrList(opTree: OPERATOR_ITEM[], level: number): str
     // if {}
     if (opList[2].type === 'leaf') {
       ifList.push(
-        `${getSpace(curLevel)}{`,
+        // `${getSpace(curLevel)}{`,
         `${getSpace(curLevel)}  return ${opList[2].value.toString().trim()}`,
-        `${getSpace(curLevel)}}`
+        `${getSpace(curLevel)}} else {`
       );
     } else if (opList[2].type === 'leafList') {
       ifList.push(
-        `${getSpace(curLevel)}{`,
+        // `${getSpace(curLevel)}{`,
         ...doParseTree2StrList(opList[2].value as OPERATOR_ITEM[], curLevel),
-        `${getSpace(curLevel)}}`
+        `${getSpace(curLevel)}} else {`
       );
     }
     // else
     if (opList[4].type === 'leaf') {
       elseStrList.push(
-        `${getSpace(curLevel)}else`,
-        `${getSpace(curLevel)}{`,
+        // `${getSpace(curLevel)}else {`,
+        // `${getSpace(curLevel)}{`,
         `${getSpace(curLevel)}  return ${opList[4].value.toString().trim()}`,
         `${getSpace(curLevel)}}`
       );
@@ -195,11 +195,94 @@ export function doParseTree2StrList(opTree: OPERATOR_ITEM[], level: number): str
   let retIfConditionList: string[] = [];
   if (ifConditionList.length === 1) {
     retIfConditionList = [
-      `${getSpace(curLevel)}if (${ifConditionList[0]}) `
+      // `${getSpace(curLevel)}if (${ifConditionList[0]}) {`
+      `if (${ifConditionList[0]}) {`
     ];
   } else {
     retIfConditionList = ifConditionList;
   }
   ret = [...retIfConditionList, ...ifList, ...elseStrList];
+  return ret;
+}
+
+function generateRandomString(length: number = 6) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
+}
+
+function doParseIfCondition(opList: OPERATOR_ITEM[], level: number, retName: string): string[] {
+  let ret: string[] = [];
+  let curLevel = level + 1;
+  if (opList.length === 5) {
+    // if condition
+    const ifConNode = opList[0];
+    if (ifConNode.type === 'leaf') {
+      
+    }
+    // if body
+    const ifBodyNode = opList[2];
+
+    // else body
+    const elseBodyNode = opList[4];
+
+  }
+  return ret;
+}
+
+
+export function doParseTree2StrList2(opTree: OPERATOR_ITEM[], level: number, hasRet: boolean = false, retName: string): string[] {
+  let ret: string[] = [];
+  let ifConList: string[] = [];
+  let ifBodyList: string[] = [];
+  let elseBodyList: string[] = [];
+  let curLevel = level + 1;
+
+  let opList: OPERATOR_ITEM[] = [];
+  if (opTree.length === 1) {
+    opList = opTree[0].value as OPERATOR_ITEM[];
+  } else {
+    opList = opTree;
+  }
+
+  if (opList.length === 5) {
+
+    // if condition
+    const ifConNode = opList[0];
+    if (ifConNode.type === 'leaf') {
+      ifConList.push(`${getSpace(curLevel)}if (${ifConNode.value.toString().trim()}) {`);
+    } else {
+      const retName = `ret${generateRandomString()}`;
+      ifConList.push(`${getSpace(curLevel)}let ${retName} = false`);
+      ifConList.push(...doParseIfCondition(ifConNode.value as OPERATOR_ITEM[], curLevel, retName));
+    }
+
+    // if body
+    const ifBodyNode = opList[2];
+    if (ifBodyNode.type === 'leaf') {
+      ifBodyList.push(
+        `${getSpace(curLevel)}  return ${ifBodyNode.value.toString().trim()}`,
+        `${getSpace(curLevel)}} else {`
+      );
+    }
+
+    // else body
+    const elseBodyNode = opList[4];
+    if (elseBodyNode.type === 'leaf') {
+      elseBodyList.push(
+        `${getSpace(curLevel)}  return ${elseBodyNode.value.toString().trim()}`,
+        `${getSpace(curLevel)}}`
+      );
+
+    }
+
+  }
+
+  ret = [...ifConList, ...ifBodyList, ...elseBodyList];
+
   return ret;
 }
